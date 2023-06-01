@@ -33,10 +33,10 @@ except Exception as e:
 # for host in esxi_hosts:
 #             print(f"ESXi Host: {host.name}")
 #             print(f"ESXi Host-datastore: {host.datastore}")
-            # print(f"IP Address: {host.summary.managementServerIp}")
-            # print(f"Product Version: {host.summary.config.product.fullName}")
-            # print("--- VMs ---")
-            # for vm in host.vm:
-            #     print(f"VM Name: {vm.name}")
-            # print("------------")
-            # print(f"---------------------------------------------------")``
+#             print(f"IP Address: {host.summary.managementServerIp}")
+#             print(f"Product Version: {host.summary.config.product.fullName}")
+#             print("--- VMs ---")
+#             for vm in host.vm:
+#                 print(f"VM Name: {vm.name}")
+#             print("------------")
+#             print(f"---------------------------------------------------")

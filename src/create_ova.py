@@ -16,11 +16,11 @@ class CreateOVA:
         # Create the deployment specification
         self.deployment_spec = vim.OvfManager.DeploymentOption()
         # self.deployment_spec.powerOn = False
-        self.deployment_spec.name = self.vm_name
+        # self.deployment_spec.name = self.vm_name
 
         # Retrieve the OVF descriptor from the URL
         self.ovf_manager = self.content.ovfManager
-        self.ovf_descriptor = self.ovf_manager.ParseDescriptor(self.ovf_url)
+        self.ovf_descriptor = self.ovf_manager.ParseDescriptor(self.ova_url)
 
         # Create the import spec
         self.import_spec_params = vim.OvfManager.CreateImportSpecParams()
