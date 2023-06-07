@@ -38,54 +38,70 @@ def main():
     
     args = parser.get_args()
     si = service_instance.connect(args)
-    # print(si.content.rootFolder.childEntity[1]) 
-    datacenter = si.content.rootFolder.childEntity[0] #Choosing Houston
+    # # print(si.content.rootFolder.childEntity[1]) 
+    # view_manager = si.content.viewManager
+    # datacenter = si.content.rootFolder.childEntity #Choosing Houston
+    # container_viewDataCenter = view_manager.CreateContainerView(datacenter, [vim.Datastore], True) 
+    # for ds in container_viewDataCenter.view:
+    #     print(ds.name)
+    
     view_manager = si.content.viewManager
+# --------------------------------------------------------------------------------------------------------------
+    # container_viewComputeResource = view_manager.CreateContainerView(datacenter, [vim.ComputeResource], True)
+    # container_viewDataCenter = view_manager.CreateContainerView(datacenter, [vim.Datacenter], True) 
+    # container_viewHostSystem = view_manager.CreateContainerView(datacenter,[vim.HostSystem],True)
+    # container_viewHostSystem = view_manager.CreateContainerView(datacenter,[vim.HostSystem],True)
 
-    container_viewComputeResource = view_manager.CreateContainerView(datacenter, [vim.ComputeResource], True)
-    container_viewDataCenter = view_manager.CreateContainerView(datacenter, [vim.Datacenter], True) 
-    container_viewHostSystem = view_manager.CreateContainerView(datacenter,[vim.HostSystem],True)
-    container_viewDataStore = view_manager.CreateContainerView(datacenter,[vim.Datastore],True)
+    # try:
+    #     for datacenter1 in si.content.rootFolder.childEntity:
+    #         print(datacenter1.name)
+    #         container_viewComputeResource = view_manager.CreateContainerView(datacenter1, [vim.ComputeResource], True)
+    #         # container_viewDataCenter = view_manager.CreateContainerView(datacenter1, [vim.Datacenter], True) 
+    #         for cluster in container_viewComputeResource.view:
+    #             print(cluster.name)
+    #             container_viewHostSystem = view_manager.CreateContainerView(cluster,[vim.HostSystem],True)
+    #             for host in container_viewHostSystem.view:
+    #                 print(host.name)
+    #                 print(clu)
+    #                 # container_viewVirtualMachine = view_manager.CreateContainerView(host,[vim.VirtualMachine],True)
+                    # for vm in container_viewVirtualMachine.view:
+                    #     print(vm.name)
+    # #     container = si.content.rootFolder.childEntity[1]  # starting point to look into
+    # #     viewType = [vim.VirtualMachine]  # object types to look for
+    # #     recursive = True  # whether we should look into it recursively
+    # #     containerView = si.content.viewManager.CreateContainerView(container, viewType, recursive)
+    # #     #getting all the VM's from the connection    
+    # #     VM_list = containerView.view
+    # #     #going 1 by 1 to every VM
+    # #     for child in VM_list:
+    # #         vm = child.name
+    # #         # #check for the VM
+    # #         # if(vm == vmName):
+    # #         vmSummary = child.summary
+    # #         print(child.name,":",)
+    # #             #get the diskInfo of the selected VM
+    # #         # info = vmSummary.vm.guest.disk
+    # #         #     #check for the freeSpace property of each disk
+    # #         # for each in info:
+    # #         #         #To get the freeSPace in GB's
+    # #         #     diskFreeSpace = each.freeSpace/1024/1024/1024
+    # #         #     print(diskFreeSpace)
 
-#     try:
-#         # for host in container_view2.view:
-#         #     print(host.name)
-        
-#         for compute_resource in container_viewComputeResource.view:
-#             print(compute_resource.name)
-#             Esxi_host=[] # Will contain the list of the datacenters
-#             Esxi_host.append(compute_resource.host)
-#             Esxi_ds = [] # Will contain the list of the datastores and it will correspond to each datastore
-#             # if resource_pool.name == name:
-#             # for host_name in compute_resource.host:
-#             #     # print(compute_resource.host.name,"-",datastore_name.name)
-#             #     Esxi_host.append(compute_resource.host)
-#             # for datastore_name in compute_resource.datastore:
-#             #     Esxi_ds.append(datastore_name.name)
-#             # print (Esxi_host)
-#             for name in container_viewHostSystem.view:
-#                 print(name.vm.name)
-#             # print (Esxi_ds)
 
-#             print("-----------------------------")
-        
-
-#     finally:
-#         container_viewComputeResource.Destroy()
-#         container_viewDataCenter.Destroy()
+    # finally:
+    #     container_viewComputeResource.Destroy()
+    #     # container_viewDataCenter.Destroy()
     
 
-#     raise Exception("Failed to find resource pool %s in datacenter %s" %
-#                     (name, datacenter.name))
+    # raise Exception("Failed to find resource pool %s in datacenter %s" %
+    #                 (name, datacenter.name))
+# --------------------------------------------------------------------------------------------------------------
 
-#This function is used for reading the default values set in by the system
     if args.datacenter_name:
         datacenter = get_dc(si, args.datacenter_name)
     else:
         datacenter = si.content.rootFolder.childEntity[0] 
     
-
-
     if args.resource_pool:
         resource_pool = get_rp(si, datacenter, args.resource_pool)
     else:
@@ -96,13 +112,11 @@ def main():
     else:
         datastore = get_largest_free_ds(datacenter)
     
-    # if args.cluster_name:
-    #     cluster = get_cs(datacenter, args.cluster_name)
-    # else:
-    #     cluster = get_largest_free_cs(cluster)    
-    #     pass
+    if args.cluster_name:
+        cluster = get_cs(si,datacenter, args.cluster_name)
+    else:
+        print("Error")
      
-
     ovf_handle = OvfHandler(args.ova_path)
 
     ovf_manager = si.content.ovfManager
@@ -161,9 +175,25 @@ def get_rp(si, datacenter, name):
                 return resource_pool
     finally:
         container_view.Destroy()
-    raise Exception("Failed to find resource pool %s in datacenter %s" %
-                    (name, datacenter.name))
+    raise Exception("Failed to find resource pool %s in datacenter %s" %(name, datacenter.name))
 
+def get_cs(si, datacenter, name):
+    """
+    Get a cluster name in the datacenter by its name.
+    """
+    view_manager = si.content.viewManager
+    container_view = view_manager.CreateContainerView(datacenter,[vim.ComputeResource],True)
+    try:
+        for cluster in container_view.view:
+            if(cluster.name == name):
+                return cluster
+    finally:
+        container_view.Destroy()
+    raise Exception("Failed to find cluster %s in datacenter %s" %(name, datacenter.name))
+
+
+def get_largest_cs():
+    pass
 
 def get_largest_free_rp(si, datacenter):
     """
@@ -216,19 +246,19 @@ def get_largest_free_ds(datacenter):
         raise Exception('Failed to find any free datastores on %s' % datacenter.name)
     return largest
 
-def get_cs():
+def get_largest_cs():
     pass
+# """
+# There are 2 workstations - Milpitas and Houston. If we create an 2D array of objects with each object being an esxi and 
+# each 1-D array element representing the cluster.
+# To get the esxi details, check the datacenter code. 
+# ex : Houston = [[1,"cluster-name"]],[d,e]] => Here we can sho
 
-"""
-There are 2 workstations - Milpitas and Houston. If we create an 2D array of objects with each object being an esxi and 
-each 1-D array element representing the cluster.
-To get the esxi details, check the datacenter code. 
-ex : Houston = [[1,"cluster-name"]],[d,e]] => Here we can sho
-
-Logic 1: Pick the cluster which has the least number of VMs deployed or more number of Esxi ? 
-Logic 2: Pick the cluster where the Esxi:VM ratio < 1:4 ? 
-Logic 3: 
-"""
+# Logic 1: Pick the cluster which has the least number of VMs deployed or more number of Esxi ? 
+# Logic 2: Pick the cluster where the Esxi:VM ratio < 1:4 ? 
+# Logic 3: 
+# """
+    
 
 def get_tarfile_size(tarfile):
     """
