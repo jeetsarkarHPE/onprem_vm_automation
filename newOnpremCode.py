@@ -19,7 +19,7 @@ import tarfile
 import time
 
 from threading import Timer
-from six.moves.urllib.request import Request, urlopen
+import six
 
 
 from pyVmomi import vim, vmodl
@@ -213,8 +213,8 @@ class OvfHandler(object):
             ssl_context = ssl._create_unverified_context()
         else:
             ssl_context = None
-        req = Request(url, ovffile, headers)
-        urlopen(req, context=ssl_context)
+        req = six.moves.urllib.request.Request(url, ovffile, headers)
+        six.moves.urllib.request.urlopen(req, context=ssl_context)
 
     def start_timer(self):
         """
@@ -277,7 +277,7 @@ class FileHandle(object):
 class WebHandle(object):
     def __init__(self, url):
         self.url = url
-        r = urlopen(url)
+        r = six.moves.urllib.request.urlopen(url)
         if r.code != 200:
             raise FileNotFoundError(url)
         self.headers = self._headers_to_dict(r)
@@ -316,9 +316,9 @@ class WebHandle(object):
     def read(self, amount):
         start = self.offset
         end = self.offset + amount - 1
-        req = Request(self.url,
+        req = six.moves.urllib.request.Request(self.url,
                       headers={'Range': 'bytes=%d-%d' % (start, end)})
-        r = urlopen(req)
+        r = six.moves.urllib.request.urlopen(req)
         self.offset += amount
         result = r.read(amount)
         r.close()
