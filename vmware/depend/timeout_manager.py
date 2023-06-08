@@ -1,4 +1,4 @@
-from lib.common.config.config_manager import ConfigManager
+from depend.config_manager import ConfigManager
 
 
 class TimeoutManager:

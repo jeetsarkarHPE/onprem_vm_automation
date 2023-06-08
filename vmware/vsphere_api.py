@@ -1,7 +1,7 @@
 import base64
 from requests import codes
 
-from common import get, post, delete
+from depend.common import get, post, delete
 
 
 class VsphereApi:

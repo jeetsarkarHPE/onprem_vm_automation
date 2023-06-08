@@ -3,8 +3,8 @@ import logging
 from pyVim.connect import vim, SmartConnect, Disconnect
 from time import sleep
 
-from timeout_manager import TimeoutManager
-from vm_power_option import VmPowerOption
+from depend.timeout_manager import TimeoutManager
+from depend.vm_power_option import VmPowerOption
 
 logger = logging.getLogger()
 
