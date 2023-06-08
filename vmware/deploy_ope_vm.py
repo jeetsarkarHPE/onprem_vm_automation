@@ -37,12 +37,13 @@ os.environ["no_proxy"] = ""
 
 
 def download_ova(url):
-    filename = url.split("/")[-1]
-    command = f"wget -q --no-check-certificate {url} -O {filename}"
-    response = subprocess.run(command.split())
-    if response.returncode != 0:
-        raise Exception(f"Failed to download OVA bundle. Command: '{command}'")
-    return f"{os.getcwd()}/{filename}"
+    # filename = url.split("/")[-1]
+    # command = f"wget -q --no-check-certificate {url} -O {filename}"
+    # response = subprocess.run(command.split())
+    # if response.returncode != 0:
+    #     raise Exception(f"Failed to download OVA bundle. Command: '{command}'")
+    # return f"{os.getcwd()}/{filename}"
+    return "/home/esroot/sachinthra/automation-test/glcp-onprem-combined-1.0.0-10.ova"
 
 
 def get_ope_vm_ip_address(hostname, username, password, ope_vm_name):
