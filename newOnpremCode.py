@@ -20,21 +20,26 @@ import time
 
 from threading import Timer
 import six
+# import moves
+# import moves
+# reload(six)
+import urllib
+import requests
 
 
 from pyVmomi import vim, vmodl
 import atexit
-from pyvim.connect import SmartConnect, Disconnect
+from pyvim import connect
 
 __author__ = 'prziborowski'
 
 
 def main():
-    si = SmartConnect(host="m2-dl380g10-74-vm01.mip.storage.hpecorp.net",
+    si = connect.SmartConnect(host="m2-dl380g10-74-vm01.mip.storage.hpecorp.net",
                                             user="administrator@vsphere.local",
                                             pwd="Nim123Boli#",
                                             disableSslCertValidation=True)
-    atexit.register(Disconnect, si)
+    atexit.register(connect.Disconnect, si)
 
     datacenter = si.content.rootFolder.childEntity[0]
     # resource_pool = get_largest_free_rp(si, datacenter)
@@ -42,7 +47,8 @@ def main():
     resource_pool = cluster.resourcePool
     datastore = selectDataStore(datacenter.datastore)
 
-    ovf_handle = OvfHandler("http://16.182.31.122:9000/golden-image/glcp-onprem-combined-1.0.0-10.ova")
+    # ovf_handle = OvfHandler("http://16.182.31.122:9000/golden-image/glcp-onprem-combined-1.0.0-10.ova")
+    ovf_handle = OvfHandler("~/golden-image/glcp-onprem-combined-1.0.0-10.ova")
 
     ovf_manager = si.content.ovfManager
     # CreateImportSpecParams can specify many useful things such as
@@ -99,14 +105,14 @@ def get_largest_free_rp(si, datacenter):
     return largest_rp
 
 
-def selectDataStore(storeList, selectedDS="datastore_1_3"):
+def selectDataStore(storeList, selectedDS="datastore_1_14"):
     for i in storeList:
         if i.name == selectedDS:
             # print(type(i))
             # print(i.name)
             return i
 
-def selectCluster(clusterList, selectedCluster="cluster-5"):
+def selectCluster(clusterList, selectedCluster="cluster-14"):
     for i in clusterList:
         if i.name == selectedCluster:
             # print(i)
@@ -213,8 +219,8 @@ class OvfHandler(object):
             ssl_context = ssl._create_unverified_context()
         else:
             ssl_context = None
-        req = six.moves.urllib.request.Request(url, ovffile, headers)
-        six.moves.urllib.request.urlopen(req, context=ssl_context)
+        req = urllib.request.Request(url, ovffile, headers)
+        urllib.request.urlopen(req, context=ssl_context)
 
     def start_timer(self):
         """
@@ -277,7 +283,7 @@ class FileHandle(object):
 class WebHandle(object):
     def __init__(self, url):
         self.url = url
-        r = six.moves.urllib.request.urlopen(url)
+        r = urllib.request.urlopen(url)
         if r.code != 200:
             raise FileNotFoundError(url)
         self.headers = self._headers_to_dict(r)
@@ -316,9 +322,9 @@ class WebHandle(object):
     def read(self, amount):
         start = self.offset
         end = self.offset + amount - 1
-        req = six.moves.urllib.request.Request(self.url,
+        req = urllib.request.Request(self.url,
                       headers={'Range': 'bytes=%d-%d' % (start, end)})
-        r = six.moves.urllib.request.urlopen(req)
+        r = urllib.request.urlopen(req)
         self.offset += amount
         result = r.read(amount)
         r.close()
