@@ -20,7 +20,7 @@ import subprocess
 from time import time
 from urllib.parse import quote
 from waiting import wait, TimeoutExpired
-from pyVim.connect import vim, SmartConnect, Disconnect
+from pyvim.connect import vim, SmartConnect, Disconnect
 
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)

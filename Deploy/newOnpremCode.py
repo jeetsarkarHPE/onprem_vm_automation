@@ -1,16 +1,5 @@
 #!/usr/bin/env python
-"""
-Written by Nathan Prziborowski
-Github: https://github.com/prziborowski
 
-This code is released under the terms of the Apache 2
-http://www.apache.org/licenses/LICENSE-2.0.html
-
-Deploy an ova file either from a local path or a URL.
-Most of the functionality is similar to ovf except that
-that an OVA file is a "tarball" so tarfile module is leveraged.
-
-"""
 import os
 import os.path
 import ssl
@@ -20,9 +9,6 @@ import time
 
 from threading import Timer
 import six
-# import moves
-# import moves
-# reload(six)
 import urllib
 import requests
 
@@ -30,9 +16,6 @@ import requests
 from pyVmomi import vim, vmodl
 import atexit
 from pyvim import connect
-
-__author__ = 'prziborowski'
-
 
 def main():
     si = connect.SmartConnect(host="m2-dl380g10-74-vm01.mip.storage.hpecorp.net",
@@ -43,12 +26,14 @@ def main():
 
     datacenter = si.content.rootFolder.childEntity[0]
     # resource_pool = get_largest_free_rp(si, datacenter)
-    cluster = selectCluster(datacenter.hostFolder.childEntity)
+    cluster_name = input(f"Enter the cluster-name in {datacenter}: ")
+    cluster = selectCluster(datacenter.hostFolder.childEntity,cluster_name)
     resource_pool = cluster.resourcePool
-    datastore = selectDataStore(datacenter.datastore)
+    selectedDS = input(f"Enter the datastore in {cluster_name}: ")
+    datastore = selectDataStore(datacenter.datastore,selectedDS)
 
-    # ovf_handle = OvfHandler("http://16.182.31.122:9000/golden-image/glcp-onprem-combined-1.0.0-10.ova")
-    ovf_handle = OvfHandler("~/golden-image/glcp-onprem-combined-1.0.0-10.ova")
+    ovf_handle = OvfHandler("http://16.182.31.122:9000/golden-image/glcp-onprem-combined-1.0.0-10.ova")
+    # ovf_handle = OvfHandler("~/golden-image/glcp-onprem-combined-1.0.0-10.ova")
 
     ovf_manager = si.content.ovfManager
     # CreateImportSpecParams can specify many useful things such as
@@ -105,14 +90,14 @@ def get_largest_free_rp(si, datacenter):
     return largest_rp
 
 
-def selectDataStore(storeList, selectedDS="datastore_1_14"):
+def selectDataStore(storeList, selectedDS):
     for i in storeList:
         if i.name == selectedDS:
             # print(type(i))
             # print(i.name)
             return i
 
-def selectCluster(clusterList, selectedCluster="cluster-14"):
+def selectCluster(clusterList, selectedCluster):
     for i in clusterList:
         if i.name == selectedCluster:
             # print(i)
