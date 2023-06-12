@@ -1,0 +1,47 @@
+- name: Connect to VM CLI GUI using Ansible
+  hosts: 16.182.31.122
+  gather_facts: false
+  become: yes
+  vars:
+    vcenter_hostname: https://m2-dl380g10-74-vm01.mip.storage.hpecorp.net/websso/SAML2/SSO/vsphere.local?SAMLRequest=zZRfb5swFMXf9ymQ38FgovyxSqqsWbVK7ZqVbJr2MjlwSSyBzXwNpN%2B%2BhiRbVG1V16e9onuPzzk%2Fm4vLfVV6LRiUWiUkCkLigcp0LtU2IV%2FW1%2F6UXM7fXaCoypovGrtTD%2FCzAbTeAhGMdWtXWmFTgUnBtDKDG5XDPiFOaOnGpBJ2kN5ZWyOntGJ%2BXsbTcBuF%2FmTkt1UYBZWsA7TaiC0EuxoybepAgaUdbBA1TRd3t4ym6T1tsd6BgaDUmSiJd61NBoOphBSiRCDezTIhP2azUMSzyWYWj%2BMCoBgXBRvnjE2jKMw204kbw5VAlC38XkRsnHe0QtmEsJDFfjj2w2jNQh5POIuCeDz5TryV0VZnunwv1aGkxiiuBUrkSlSA3Ga8N8xZEPLNYQj5x%2FV65a%2Fu0%2FUg0MoczCc3nZB%2FqIOPRjHxvp5YsZ6Vo6eQD3RedlIfbZP5keWQ17xeQJxwk%2FlbUDaS9oeckFZgRS6suKDnbg7eWM37bm6WK13K7NFblKXurgwI6%2FqypoEBfCXsy4b7LzL3i2GU131taEFZ4qWrXv9zI0pZSDBvu5t%2FCXSOhL2WCT0G5%2B4p5bIvGc9lXg3mucpRpHUrh5AuY1t1wr2gTFcUsx1UAqmw1viDMGVhxGg4oh%2F2rqr%2BnuEp0B7lL42u64IuDrTZuoUwot%2FubtNBy5fDA8ocIjfP7WPtkPXH8wdQ0IlNCWv37Q%2BB%2FyOrSyhhe26VPoczP13b8x%2Fi%2FAk%3D&RelayState=92309bf3-f389-4775-acff-1a5144b21764&SigAlg=http%3A%2F%2Fwww.w3.org%2F2001%2F04%2Fxmldsig-more%23rsa-sha256&Signature=Cxc0ieVPbYLhDpKvAFUG7wlmrk%2FyQBeDN79NOdi%2BIWNgfp7%2FgWX%2FlhP%2Ba3WhmV32CnYfwABZJ0tdklxnu1PyZ25rh9Qd39%2Bh9mzQlWa6iEry2linNvzIP2EW349Xm%2BSjIBnghhlNpigvqGAU58g0AIMsKLlr4WRjtSTg%2Fgg%2BYCAk237RxkERttcDv%2FqmXoaCi0lMO0i6znIAiWRJrR5GR61a%2BHywn%2F9HpMa2YFE2zBDClFAifSb9F3xZQwiWIIcAvPIeU2prnelfMv2pISSUThw9GAXtE60J3SD8ISQEALXk5aY1RTYYV%2FhacI7REqH742kUuVK7zfSxq79BAWzxpQ%3D%3D
+    vcenter_username: administrator@vsphere.local
+    vcenter_password: Nim123Boli#
+    vm_name: glcp-onprem
+    vm_username: cliadmin
+    vm_password: cliadmin@123456!
+    cli_commands:
+      - "vmware-cmd -H esxi-host -U administrator@vsphere.local -P Nim123Boli# /vmfs/volumes/datastore_1_5/glcp-onprem/vmware-vdiskmanager -c"
+      #- "your_command_2"
+
+  tasks:
+    - name: Install expect package
+      become: yes
+      #ansible_become_password: your_sudo_password
+      package:
+        name: expect
+        state: present
+
+    - name: Connect to VM CLI GUI
+      expect:
+        command: ssh {{ vm_username }}@{{ vm_name }}
+        responses:
+          "(yes/no)?": "yes"
+          "password:": "{{ vm_password }}"
+        echo: yes
+      register: cli_output
+
+    - name: Execute commands inside VM CLI GUI
+      expect:
+        command: "{{ item }}"
+        responses:
+          "Enter response 1:": "2"
+          "Enter response 2:": "1"
+        echo: yes
+      loop: "{{ cli_commands }}"
+      when: cli_output|success
+      register: command_output
+
+    - name: Display command output
+      debug:
+        var: item.stdout_lines
+      loop: "{{ command_output.results }}"
