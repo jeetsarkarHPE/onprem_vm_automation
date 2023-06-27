@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-__author__ = "jeetsarkarHPE"
-
 import os
 import os.path
 import ssl
@@ -43,7 +41,7 @@ def main():
 
     datastore = selectDataStore(datacenter.datastore,selectedDS)
     
-    # selectedChoice = server_location(input("Enter the choice to be selected; 1 for Milpitas based server, 2 for Houston: "))
+    # selectedChoice = server_location(input("Enter the choice to be selected; 1 for Houston based server, 2 for Milpitas: "))
 
     # build_name = input("Enter the build name just before .ova ; ex: glcp-onprem-combined-1.0.0-10  or testing/glcp-onprem-combined-1.0.0-10 : ")
     
