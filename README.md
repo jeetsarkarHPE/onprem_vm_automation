@@ -6,6 +6,10 @@ It consists of 3 main directories - Test, ova_deploy and vm_config.
 1. The test directories consist of codes that are developed during the experimental phase of the project. 
 2. These codebases are to be referred only to take some help or get an idea of the code. 
 
+#### delete_vm 
+1. The destroy.py is the main code to run the delete function. The VM name (case sensitive) needs to be mentioned. 
+2. The tasks.py is imported in the destroy. It is a helper module for the task operations and needs to be included.
+   
 #### ova_deploy Directory
 1. The ova_deploy directory consist of the codes that are able to execute the deployment of Virtual Machine from an OVA file. 
 2. The directory has 2 main codes - newOnpremCode.py and service_instance.py
