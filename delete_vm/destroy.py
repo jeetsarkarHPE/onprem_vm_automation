@@ -30,7 +30,6 @@ def main():
 
 
 class deleteVM:
-    __author__ = "jeetsarkarHPE"
     # datacenter = si.content.rootFolder.childEntity[0]
     view_manager = si.content.viewManager
     def __init__(self,si):
